@@ -6,8 +6,12 @@
 ![Kotlin](https://img.shields.io/badge/Kotlin-0095D5?&style=for-the-badge&logo=kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/Compose-4285F4?style=for-the-badge&logo=jetpack-compose&logoColor=white)
 ![Room Database](https://img.shields.io/badge/Room-4285F4?style=for-the-badge&logo=android&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
 
-A modern, feature-rich Android shopping application built with Jetpack Compose, Room Database, and MVVM architecture. Browse clothing items, manage your cart, save favorites, and complete purchases seamlessly.
+A modern, feature-rich Android shopping application built with Jetpack Compose, Room Database, Firebase, and MVVM architecture. Browse clothing items, manage your cart, save favorites, and complete purchases seamlessly.
+
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/CLAY8l/Clothing-Shopping-App)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
 </div>
 
@@ -39,14 +43,15 @@ This is a fully functional e-commerce Android application designed for clothing 
 ### Key Highlights
 
 - ✨ **Modern UI/UX** - Beautiful, responsive design built with Jetpack Compose
-- 🗄️ **Local Database** - Room database for offline data persistence
+- 🗄️ **Dual Database** - Room database for offline + Firebase Firestore for cloud sync
 - 🌐 **API Integration** - Fetches products from FakeStore API
-- 🔐 **User Authentication** - Secure login and signup with Room database
+- 🔐 **User Authentication** - Secure login and signup with Firebase integration
 - 🛒 **Shopping Cart** - Full cart management with quantity updates
-- ❤️ **Favorites** - Save and manage favorite products
+- ❤️ **Favorites** - Save and manage favorite products with cloud sync
 - 📦 **Order Management** - Complete order processing with background service
-- 🔔 **Notifications** - In-app notification system
+- 🔔 **Notifications** - In-app notification system with Room database
 - 🔍 **Search** - Real-time product search functionality
+- ☁️ **Firebase Integration** - Cloud storage, Firestore, and data synchronization
 
 ---
 
@@ -137,6 +142,13 @@ This is a fully functional e-commerce Android application designed for clothing 
 - `com.squareup.okhttp3:okhttp` - HTTP client implementation
 - `com.squareup.okhttp3:logging-interceptor` - Network logging
 
+#### Firebase
+- `com.google.firebase:firebase-firestore-ktx` - Firestore database
+- `com.google.firebase:firebase-storage-ktx` - Firebase Storage
+- `com.google.firebase:firebase-auth-ktx` - Firebase Authentication
+- `com.google.firebase:firebase-analytics-ktx` - Firebase Analytics
+- `com.google.gms:google-services` - Google Services plugin
+
 #### Coroutines
 - `org.jetbrains.kotlinx:kotlinx-coroutines-android` - Asynchronous programming
 
@@ -197,9 +209,11 @@ The application follows the **MVVM (Model-View-ViewModel)** architecture pattern
 - Handles data transformation
 
 #### **Data Sources**
-- **Room Database**: Local data persistence
+- **Room Database**: Local data persistence (offline-first)
+- **Firebase Firestore**: Cloud database for data sync and backup
+- **Firebase Storage**: Cloud storage for images and files
 - **FakeStore API**: Remote product data
-- **SharedPreferences**: Order storage (legacy)
+- **Hybrid Approach**: Room for offline + Firebase for cloud sync
 
 ---
 
@@ -433,26 +447,30 @@ app/src/main/java/com/example/app_ui/
 │   │       └── ApiProduct.kt          # API product data class
 │   │
 │   ├── dao/
-│   │   ├── UserDao.kt                 # User database operations
-│   │   ├── ProductCartDao.kt           # Cart database operations
-│   │   ├── FavoriteProductDao.kt      # Favorites database operations
-│   │   ├── OrderDao.kt                # Order database operations
-│   │   └── NotificationDao.kt        # Notification database operations
+│   │   ├── UserDao.kt                  # User database operations
+│   │   ├── ProductCartDao.kt            # Cart database operations
+│   │   ├── FavoriteProductDao.kt        # Favorites database operations
+│   │   ├── OrderDao.kt                 # Order database operations
+│   │   └── NotificationDao.kt          # Notification database operations
 │   │
 │   ├── database/
-│   │   └── AppDatabase.kt             # Room database instance
+│   │   └── AppDatabase.kt              # Room database instance
 │   │
 │   ├── entity/
-│   │   ├── User.kt                    # User entity
-│   │   ├── ProductCart.kt              # Cart item entity
-│   │   ├── FavoriteProduct.kt         # Favorite product entity
+│   │   ├── User.kt                     # User entity
+│   │   ├── ProductCart.kt               # Cart item entity
+│   │   ├── FavoriteProduct.kt          # Favorite product entity
 │   │   ├── Order.kt                    # Order entity
 │   │   ├── OrderItem.kt                # Order item entity
 │   │   └── Notification.kt             # Notification entity
 │   │
+│   ├── firebase/
+│   │   ├── FirestoreService.kt         # Firestore database operations
+│   │   └── StorageService.kt           # Firebase Storage operations
+│   │
 │   └── repository/
 │       ├── UserRepository.kt           # User data repository
-│       ├── CartRepository.kt          # Cart data repository
+│       ├── CartRepository.kt           # Cart data repository
 │       ├── FavoriteRepository.kt       # Favorites repository
 │       ├── ProductRepository.kt        # Product API repository
 │       ├── OrderRepository.kt          # Order repository
@@ -483,7 +501,9 @@ app/src/main/java/com/example/app_ui/
 │
 ├── utils/
 │   ├── ViewModelFactory.kt             # ViewModel factory helpers
-│   └── OrderReader.kt                  # Order reading utilities
+│   ├── OrderReader.kt                   # Order reading utilities
+│   ├── FirebaseMigrationHelper.kt      # Migrates Room data to Firestore
+│   └── FirebaseUserHelper.kt           # Manages current user session
 │
 ├── viewmodel/
 │   ├── UserViewModel.kt                # User authentication ViewModel
@@ -512,13 +532,14 @@ app/src/main/java/com/example/app_ui/
 - JDK 11 or higher
 - Android SDK 26 or higher
 - Kotlin plugin
+- Firebase account (for cloud features)
 
 ### Installation Steps
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd APP_UI
+   git clone https://github.com/CLAY8l/Clothing-Shopping-App.git
+   cd Clothing-Shopping-App
    ```
 
 2. **Open in Android Studio**
@@ -526,16 +547,26 @@ app/src/main/java/com/example/app_ui/
    - Select "Open an Existing Project"
    - Navigate to the project directory
 
-3. **Sync Gradle**
+3. **Firebase Setup** (Required for cloud features)
+   - The `google-services.json` file is already included
+   - If you want to use your own Firebase project:
+     1. Go to [Firebase Console](https://console.firebase.google.com/)
+     2. Create a new project or use existing one
+     3. Add Android app with package name: `com.example.app_ui`
+     4. Download `google-services.json` and replace the existing one in `app/` folder
+     5. Enable Firestore Database and Storage in Firebase Console
+   - See [FIREBASE_QUICK_START.md](FIREBASE_QUICK_START.md) for detailed instructions
+
+4. **Sync Gradle**
    - Android Studio will automatically sync Gradle
    - Wait for dependencies to download
 
-4. **Build the project**
+5. **Build the project**
    ```bash
    ./gradlew build
    ```
 
-5. **Run the app**
+6. **Run the app**
    - Connect an Android device or start an emulator
    - Click "Run" or press `Shift + F10`
    - Minimum Android version: 8.0 (API 26)
@@ -544,7 +575,7 @@ app/src/main/java/com/example/app_ui/
 
 #### Permissions
 The app requires the following permissions (already configured):
-- `INTERNET` - For API calls
+- `INTERNET` - For API calls and Firebase
 - `ACCESS_NETWORK_STATE` - Check network connectivity
 - `POST_NOTIFICATIONS` - Show notifications
 - `FOREGROUND_SERVICE` - Background order processing
@@ -553,6 +584,13 @@ The app requires the following permissions (already configured):
 - The app uses FakeStore API (no API key required)
 - Base URL: `https://fakestoreapi.com/`
 - Category: `men's clothing`
+
+#### Firebase Configuration
+- **Firestore**: Used for cloud data storage (users, cart, favorites, orders, notifications)
+- **Storage**: Used for image uploads (product images, user profiles)
+- **Authentication**: Available for future use
+- **Project ID**: `clothing-shopping-app-ff58a` (or your own project)
+- See [FIREBASE_INTEGRATION_GUIDE.md](FIREBASE_INTEGRATION_GUIDE.md) for complete setup
 
 ---
 
@@ -624,7 +662,8 @@ The app includes a foreground service (`SendOrderService`) that processes orders
 - Shows two notifications:
   1. "Processing order..." (immediate)
   2. "Order confirmed! #12345" (after delay)
-- Saves orders to SharedPreferences
+- Saves orders to Room database and Firebase Firestore
+- Creates notifications in the app's notification system
 - Auto-stops when finished
 
 #### Usage
@@ -642,6 +681,34 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
     context.startService(serviceIntent)
 }
 ```
+
+## ☁️ Firebase Integration
+
+### Firestore Database
+- **Users**: User authentication and profile data
+- **Cart**: Shopping cart items synced across devices
+- **Favorites**: Saved products with cloud backup
+- **Orders**: Order history with cloud storage
+- **Notifications**: In-app notifications stored in cloud
+
+### Firebase Storage
+- **Product Images**: Upload and store product images
+- **User Profiles**: Store user profile pictures
+- **Automatic URLs**: Download URLs saved in Firestore
+
+### Data Synchronization
+- **Hybrid Approach**: Room database for offline + Firestore for cloud sync
+- **Automatic Migration**: Local data migrated to Firestore on login
+- **Real-time Updates**: Changes sync across devices
+- **Offline Support**: App works offline with Room database
+
+### Firebase Services
+- `FirestoreService`: All Firestore database operations
+- `StorageService`: Image upload/download operations
+- `FirebaseMigrationHelper`: Migrates Room data to Firestore
+- `FirebaseUserHelper`: Manages current user session
+
+See [FIREBASE_DATA_LOCATION.md](FIREBASE_DATA_LOCATION.md) for data structure details.
 
 ---
 
@@ -730,9 +797,21 @@ Developed with ❤️ using modern Android development practices.
 
 ---
 
+## 📚 Documentation
+
+- [README.md](README.md) - This file
+- [FIREBASE_INTEGRATION_GUIDE.md](FIREBASE_INTEGRATION_GUIDE.md) - Complete Firebase setup guide
+- [FIREBASE_QUICK_START.md](FIREBASE_QUICK_START.md) - Quick Firebase setup
+- [FIREBASE_DATA_LOCATION.md](FIREBASE_DATA_LOCATION.md) - Where data is stored in Firebase
+- [FIREBASE_EXPORT_IMPORT_GUIDE.md](FIREBASE_EXPORT_IMPORT_GUIDE.md) - How to export/import Firebase data
+- [BACKGROUND_SERVICE_README.md](BACKGROUND_SERVICE_README.md) - Background service documentation
+- [HOW_TO_TEST_ORDER_SERVICE.md](HOW_TO_TEST_ORDER_SERVICE.md) - Testing order service
+- [GITHUB_COMMIT_GUIDE.md](GITHUB_COMMIT_GUIDE.md) - Git and GitHub guide
+
 ## 🙏 Acknowledgments
 
 - [FakeStore API](https://fakestoreapi.com/) for providing test product data
+- [Firebase](https://firebase.google.com/) for cloud services
 - Jetpack Compose team for the amazing UI framework
 - Android developers community for best practices and guidance
 
@@ -740,9 +819,14 @@ Developed with ❤️ using modern Android development practices.
 
 <div align="center">
 
-**Made with ❤️ using Jetpack Compose**
+**Made with ❤️ using Jetpack Compose & Firebase**
 
 ⭐ Star this repo if you find it helpful!
+
+[![GitHub stars](https://img.shields.io/github/stars/CLAY8l/Clothing-Shopping-App?style=social)](https://github.com/CLAY8l/Clothing-Shopping-App/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/CLAY8l/Clothing-Shopping-App?style=social)](https://github.com/CLAY8l/Clothing-Shopping-App/network/members)
+
+**Repository**: [https://github.com/CLAY8l/Clothing-Shopping-App](https://github.com/CLAY8l/Clothing-Shopping-App)
 
 </div>
 
