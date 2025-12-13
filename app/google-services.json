@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "266798057620",
+    "project_id": "clothing-shopping-app-ff58a",
+    "storage_bucket": "clothing-shopping-app-ff58a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:266798057620:android:fe18eec54598a3df108c81",
+        "android_client_info": {
+          "package_name": "com.example.app_ui"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDF3yI9bkRjzbgpIXt6w1hm0-aQ6UPVTVw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
