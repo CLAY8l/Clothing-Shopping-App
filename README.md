@@ -791,12 +791,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-## 👨‍💻 Author
-
-Developed with ❤️ using modern Android development practices.
-
----
-
 ## 📚 Documentation
 
 - [README.md](README.md) - This file
@@ -819,7 +813,7 @@ Developed with ❤️ using modern Android development practices.
 
 <div align="center">
 
-**Made with ❤️ using Jetpack Compose & Firebase**
+**Made using Jetpack Compose & Firebase**
 
 ⭐ Star this repo if you find it helpful!
 
