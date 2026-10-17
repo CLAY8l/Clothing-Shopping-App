@@ -55,9 +55,10 @@ captures/
 .externalNativeBuild
 .cxx/
 
-# Google Services (e.g. APIs or Firebase)
-# google-services.json - Uncomment if you want to exclude it
-# Note: This file is project-specific but generally safe to commit
+# Google Services and API keys
+**/google-services.json
+**/secrets.properties
+**/secrets.xml
 
 # Freeline
 freeline.py
